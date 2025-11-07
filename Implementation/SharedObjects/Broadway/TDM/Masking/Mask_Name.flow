@@ -1,0 +1,69 @@
+description: Mask First Name
+tags: masking,Masking
+stages:
+  Get Seed:
+    actors:
+      GetSeed:
+        parent: InnerFlow
+        height: 342
+        in:
+          flowName:
+            const: GetSeed
+        out:
+          Seed:
+            schema: '#ref'
+      Get Value:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: value
+  Check if FirstName:
+    dependsOn: Get Seed
+    actors:
+      Is First ?:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          a:
+            external: Type
+            schema: string
+          b:
+            const: First
+            schema: string
+      FirstNames:
+        parent: FirstNames
+    split: '--------------------'
+  Else LastName:
+    else: true
+    dependsOn: Get Seed
+    actors:
+      LastNames:
+        parent: LastNames
+  Stage 1:
+    actors:
+      RandomFromCollection1:
+        parent: RandomFromCollection
+        height: 344
+        in:
+          collection:
+            link:
+            - FirstNames/strings
+            - LastNames/strings
+            schema: '#ref'
+          seed:
+            const: null
+            link: GetSeed/Seed
+        out:
+          value:
+            external: value
+schemas:
+  GetSeed.out.Seed:
+    type: object
+    properties:
+      Execution_Id:
+        type: string
+  RandomFromCollection1.in.collection:
+    type: array
+    items: {
+      }

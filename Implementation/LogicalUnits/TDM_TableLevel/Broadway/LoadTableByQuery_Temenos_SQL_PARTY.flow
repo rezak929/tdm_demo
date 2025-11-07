@@ -81,8 +81,12 @@ stages:
             const: null
             external: targetTable
           fields:
-            const: null
-            link: Table's fields Names /value
+            const:
+            - party_id
+            - party_key
+            - party_type
+            - full_name
+            - payload
           keys:
             const: null
           batch:
@@ -91,6 +95,26 @@ stages:
             const: target
             schema: string
             mandatory: false
+          party_id:
+            schema: any
+            mandatory: false
+            createdBy: fields
+          party_key:
+            schema: any
+            mandatory: false
+            createdBy: fields
+          party_type:
+            schema: any
+            mandatory: false
+            createdBy: fields
+          full_name:
+            schema: any
+            mandatory: false
+            createdBy: fields
+          payload:
+            schema: any
+            mandatory: false
+            createdBy: fields
           params:
             link:
               path: Input Records/value

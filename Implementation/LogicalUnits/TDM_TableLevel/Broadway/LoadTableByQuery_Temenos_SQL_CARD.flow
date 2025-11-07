@@ -81,8 +81,14 @@ stages:
             const: null
             external: targetTable
           fields:
-            const: null
-            link: Table's fields Names /value
+            const:
+            - card_id
+            - account_no
+            - card_type
+            - card_num
+            - expiry_mm_yy
+            - status
+            - payload
           keys:
             const: null
           batch:
@@ -91,6 +97,34 @@ stages:
             const: target
             schema: string
             mandatory: false
+          card_id:
+            schema: any
+            mandatory: false
+            createdBy: fields
+          account_no:
+            schema: any
+            mandatory: false
+            createdBy: fields
+          card_type:
+            schema: any
+            mandatory: false
+            createdBy: fields
+          card_num:
+            schema: any
+            mandatory: false
+            createdBy: fields
+          expiry_mm_yy:
+            schema: any
+            mandatory: false
+            createdBy: fields
+          status:
+            schema: any
+            mandatory: false
+            createdBy: fields
+          payload:
+            schema: any
+            mandatory: false
+            createdBy: fields
           params:
             link:
               path: Input Records/value

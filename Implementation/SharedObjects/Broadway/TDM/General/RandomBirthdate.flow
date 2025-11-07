@@ -1,0 +1,45 @@
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      JavaScript1:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              function randomBirthday(startYear, endYear) {
+                var start = new Date(startYear, 0, 1).getTime();  // Jan 1 startYear
+                var end = new Date(endYear, 11, 31).getTime();    // Dec 31 endYear
+                var randomTime = start + Math.random() * (end - start);
+                var date = new Date(randomTime);
+
+                // Manual zero-padding for compatibility
+                var yyyy = date.getFullYear();
+                var mm = (date.getMonth() + 1 < 10 ? "0" : "") + (date.getMonth() + 1);
+                var dd = (date.getDate() < 10 ? "0" : "") + date.getDate();
+
+                return yyyy + "-" + mm + "-" + dd;
+              }
+
+              // Example usage in K2View Flow
+              var birthday = randomBirthday(1960, 2005);
+              flowArgs["birth_date"] = birthday;
+
+              print("Generated birth date: " + flowArgs["birth_date"]);
+
+              // Optional: enumerate flowArgs for debugging
+              for (var i in flowArgs) {
+                print(i + " = " + flowArgs[i]);
+
+              }
+              flowArgs["birth_date"];
+        out:
+          result:
+            external: result
+            schema: '#ref'
+schemas:
+  JavaScript1.out.result:
+    type: object
+    properties:
+      birth_date:
+        type: string

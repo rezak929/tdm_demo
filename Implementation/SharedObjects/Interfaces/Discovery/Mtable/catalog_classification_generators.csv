@@ -17,7 +17,7 @@ classification,generator,params,consistent,unique,seed,useEnvironment,useExecuti
 "COUNTY","","{}",false,false,false,false,false,true,"MASK_NO_CACHE","","{}","enable_masking","","{}","[]"
 "CREDIT_CARD","RandomCreditCard.actor","{""prefixLength"":0}",true,true,false,false,false,true,"MASK_NO_CACHE","","{}","enable_masking","","{}","[]"
 "CREDIT_SCORE","","{}",false,false,false,false,false,true,"MASK_NO_CACHE","","{}","enable_masking","","{}","[]"
-"DATE_OF_BIRTH","DateAdd.actor","{""years"":4,""months"":3,""days"":"""",""hours"":"""",""minutes"":"""",""seconds"":"""",""millis"":""""}",false,false,false,false,false,true,"MASK_NO_CACHE","","{}","enable_masking","","{}","[]"
+"DATE_OF_BIRTH","RandomBirthdate","{}",false,false,false,false,false,true,"MASK_NO_CACHE","","{}","enable_masking","","{}","[]"
 "DEBIT_CARD","RandomCreditCard.actor","{""prefixLength"":4}",false,false,false,false,false,true,"MASK_NO_CACHE","","{}","enable_masking","","{}","[]"
 "DEFAULT_BOOLEAN","RandomFromCollection.actor","{""collection"":[""true"",""false""]}",false,false,false,false,false,true,"MASK_NO_CACHE","","{}","enable_masking","","{}","[]"
 "DEFAULT_BYTES","RandomString.actor","{""minLength"":1,""maxLength"":1}",false,false,false,false,false,true,"MASK_NO_CACHE","","{}","enable_masking","","{}","[{""actorInputName"":""maxLength"",""catalogProperty"":""maximumValue""},{""actorInputName"":""minLength"",""catalogProperty"":""minimumValue""}]"

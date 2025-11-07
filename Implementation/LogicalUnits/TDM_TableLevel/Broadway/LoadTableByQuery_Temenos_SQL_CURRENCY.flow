@@ -3,41 +3,6 @@ stages:
   Inputs:
     transactional: false
     actors:
-      JavaScript1:
-        parent: JavaScript
-        in:
-          script:
-            const:
-              userCode: |-
-                const arr = inputRecords
-
-                var topKeys = [];
-
-                if (arr && arr.size && arr.size() > 0) {
-                    var first = arr.get(0);              // get the first record
-                    if (first && first.keySet) {
-                        topKeys = Java.from(first.keySet());  // convert Java Set → JS Array
-                    }
-                }
-
-                topKeys;
-              script: |-
-                var arr = inputRecords;
-                var topKeys = [];
-
-                if (arr && arr.size && arr.size() > 0) {
-                  var first = arr.get(0); // get the first record
-
-                  if (first && first.keySet) {
-                    topKeys = Java.from(first.keySet()); // convert Java Set → JS Array
-                  }
-                }
-
-                topKeys;
-          inputRecords:
-            external: inputRecords
-            schema: '#ref'
-            mandatory: false
       Target Interface:
         parent: Const
         remark: The target interface
@@ -100,8 +65,6 @@ stages:
         out:
           result:
             schema: integer
-  Stage 1:
-    transactional: false
   Load Data To Target:
     transactional: true
     actors:
@@ -118,8 +81,12 @@ stages:
             const: null
             external: targetTable
           fields:
-            const: null
-            link: JavaScript1/result
+            const:
+            - currency_code
+            - currency_id
+            - currency_name
+            - minor_units
+            - payload
           keys:
             const: null
           batch:
@@ -128,27 +95,19 @@ stages:
             const: target
             schema: string
             mandatory: false
-          card_id:
+          currency_code:
             schema: any
             mandatory: false
             createdBy: fields
-          account_no:
+          currency_id:
             schema: any
             mandatory: false
             createdBy: fields
-          card_type:
+          currency_name:
             schema: any
             mandatory: false
             createdBy: fields
-          card_num:
-            schema: any
-            mandatory: false
-            createdBy: fields
-          expiry_mm_yy:
-            schema: any
-            mandatory: false
-            createdBy: fields
-          status:
+          minor_units:
             schema: any
             mandatory: false
             createdBy: fields
@@ -209,25 +168,6 @@ stages:
             external: result
             schema: integer
 schemas:
-  JavaScript1.in.inputRecords:
-    type: array
-    items:
-      type: object
-      properties:
-        card_id:
-          type: integer
-        account_no:
-          type: string
-        card_type:
-          type: string
-        card_num:
-          type: string
-        expiry_mm_yy:
-          type: string
-        status:
-          type: string
-        payload:
-          type: string
   Table's fields Names .in.value:
     type: array
     items:

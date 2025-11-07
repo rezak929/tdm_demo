@@ -1,0 +1,47 @@
+tags: Masking
+stages:
+  Get Address:
+    actors:
+      MaskAddress:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: MaskAddress
+          record:
+            external: record
+            schema: '#ref'
+            mandatory: false
+        out:
+          value:
+            schema: '#ref'
+  Get Latitude:
+    actors:
+      Latitude:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: MaskAddress/value/Latitude
+        out:
+          value:
+            external: value
+schemas:
+  MaskAddress.in.record:
+    type: object
+    properties: {
+      }
+  MaskAddress.out.value:
+    type: object
+    properties:
+      city:
+        type: string
+      postalcode:
+        type: string
+      street1:
+        type: string
+      state:
+        type: string
+      Latitude:
+        type: string
+      Longitude:
+        type: string
