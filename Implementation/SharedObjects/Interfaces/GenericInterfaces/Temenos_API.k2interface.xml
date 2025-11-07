@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GenericInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="CUSTOM" displayName="" enabled="true" version="1.4">
+    <Name>Temenos_API</Name>
+    <Properties>
+        <Property name="Host">
+            <Value>https://api.temenos.com/api</Value>
+        </Property>
+        <Property name="Port">
+            <Value>0</Value>
+        </Property>
+        <Property name="User">
+            <Value>apikey</Value>
+        </Property>
+        <Property name="Password">
+            <Value>~encs2~pP4Dsyqa/k1MhXrysMWmiVI6lvHeTF6lc78fdkOq3yuXpaR8h46nHPihR63kQAQ7X0i01V6V1tvg2lhcTNGwnw==</Value>
+        </Property>
+        <Property name="Data">
+            <Value></Value>
+        </Property>
+        <Property name="ioprovider">
+            <Value></Value>
+        </Property>
+        <Property name="TechType">
+            <Value></Value>
+        </Property>
+        <Property name="BF_Metadata">
+            <Value></Value>
+        </Property>
+        <Property name="BF_FilesList">
+            <Value></Value>
+        </Property>
+        <Property name="BF_DataSnapshot">
+            <Value></Value>
+        </Property>
+    </Properties>
+</GenericInterface>

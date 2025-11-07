@@ -1,0 +1,52 @@
+description: Mask First Name
+tags: masking,Masking
+stages:
+  Get Seed:
+    actors:
+      Get Value:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: value
+        out:
+          value:
+            schema: string
+      RandomNumber1:
+        parent: RandomNumber
+  Else LastName:
+    actors:
+      FirstNames:
+        parent: FirstNames
+      LastNames:
+        parent: LastNames
+  Stage 1:
+    actors:
+      Concat1:
+        parent: Concat
+        in:
+          elements:
+            link:
+            - FirstNames/strings
+            - LastNames/strings
+  Stage 2:
+    actors:
+      RandomFromCollection1:
+        parent: RandomFromCollection
+        in:
+          collection:
+            link:
+              path: Concat1/string
+              pos: 0
+            schema: '#ref'
+          seed:
+            const: null
+            link: RandomNumber1/value
+        out:
+          value:
+            external: value
+schemas:
+  RandomFromCollection1.in.collection:
+    type: array
+    items: {
+      }

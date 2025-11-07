@@ -1,0 +1,253 @@
+tags: Masking
+stages:
+  Input:
+    actors:
+      Row:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: record
+            schema: object
+        out:
+          value:
+            schema: '#ref'
+      GetSeed:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetSeed
+        out:
+          Seed:
+            schema: '#ref'
+      RandomNumber1:
+        parent: RandomNumber
+  Get Record per State:
+    actors:
+      Address By State:
+        parent: MTableRandom
+        in:
+          mtable:
+            const: Address
+          seed:
+            const: null
+            link: RandomNumber1/value
+          state:
+            link: Row/value/state
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Mask:
+    dependsOn: Get Record per State
+    split: '--------------------'
+  Pass:
+    dependsOn: Get Record per State
+    actors:
+      IsNull ?:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: Address By State/result
+      Address Random:
+        parent: MTableRandom
+        in:
+          mtable:
+            const: Address
+          seed:
+            const: null
+        out:
+          result:
+            schema: '#ref'
+  Case:
+    actors:
+      Camelcase City:
+        parent: JavaScript
+        height: 148
+        in:
+          script:
+            const: |-
+              function CamelcaseSentence(sentence) {
+                return sentence.toLowerCase().replace(/\b\w/g, function(word) {
+                  return word.toUpperCase();
+                });
+              }
+
+              CamelcaseSentence(City);
+          City:
+            link:
+            - Address By State/result/city
+            - Address Random/result/city
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+      Street1:
+        parent: StringFormat
+        in:
+          format:
+            const: ${0} ${1}
+          params:
+            link:
+            - path: Address By State/result/number
+              pos: 0
+            - path: Address Random/result/number
+              pos: 0
+            - path: Address By State/result/street
+              pos: 1
+            - path: Address Random/result/street
+              pos: 1
+      Lat/Long:
+        parent: MTableRandom
+        in:
+          mtable:
+            const: Addresses
+        out:
+          result:
+            schema: '#ref'
+          Latitude:
+            schema: string
+          Longitude:
+            schema: string
+  Street:
+    actors:
+      Camelcase Street:
+        parent: JavaScript
+        height: 218
+        in:
+          script:
+            const: |-
+              function CamelcaseSentence(sentence) {
+                return sentence.toLowerCase().replace(/\b\w/g, function(word) {
+                  return word.toUpperCase();
+                });
+              }
+
+              CamelcaseSentence(Street);
+          Street:
+            link: Street1/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Combine:
+    actors:
+      Combine Masked Value:
+        parent: MapCreate
+        height: 238
+        in:
+          city:
+            link: Camelcase City/result
+            schema: string
+            mandatory: false
+          postalcode:
+            link:
+            - Address By State/result/zipcode
+            - Address Random/result/zipcode
+            schema: string
+            mandatory: false
+          street1:
+            link: Camelcase Street/result
+            schema: string
+            mandatory: false
+          Latitude:
+            link: Lat%2FLong/Latitude
+            schema: string
+            mandatory: false
+          Longitude:
+            link: Lat%2FLong/Longitude
+            schema: string
+            mandatory: false
+          street2:
+            link:
+            - Address By State/result/street2
+            - Address Random/result/street2
+            schema: any
+            mandatory: false
+        out:
+          map:
+            external: value
+            schema: '#ref'
+  Output: {
+    }
+schemas:
+  Row.out.value:
+    type: object
+    properties:
+      state:
+        type: string
+  GetSeed.out.Seed:
+    type: object
+    properties:
+      Execution_Id:
+        type: string
+  Address By State.out.result:
+    type: object
+    properties:
+      zipcode:
+        type: string
+      number:
+        type: string
+      street:
+        type: string
+      street2: {
+        }
+      city:
+        type: string
+      state:
+        type: string
+      country:
+        type: string
+  Address Random.out.result:
+    type: object
+    properties:
+      zipcode:
+        type: string
+      number:
+        type: string
+      street:
+        type: string
+      street2:
+        type: string
+      city:
+        type: string
+      state:
+        type: string
+      country:
+        type: string
+  Lat/Long.out.result:
+    type: object
+    properties:
+      Postalcode:
+        type: string
+      City:
+        type: string
+      County:
+        type: string
+      State:
+        type: string
+      Latitude:
+        type: string
+      Longitude:
+        type: string
+  Combine Masked Value.out.map:
+    type: object
+    properties:
+      city:
+        type: string
+      postalcode:
+        type: string
+      street1:
+        type: string
+      state:
+        type: string
+      Latitude:
+        type: string
+      Longitude:
+        type: string

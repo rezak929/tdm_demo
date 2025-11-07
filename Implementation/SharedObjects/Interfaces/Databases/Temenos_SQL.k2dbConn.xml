@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DBConn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="DBConnGenericAdoJdbc" name="Temenos_SQL" type="genericdb" version="8.3.0">
+    <JdbcDriverName>SqlServer</JdbcDriverName>
+    <Active>true</Active>
+    <ConnectionProperties></ConnectionProperties>
+    <ConnectionStringServerSide>jdbc:sqlserver://192.168.1.10:1433;database=Temenos_PROD;sendStringParametersAsUnicode=false;trustServerCertificate=true</ConnectionStringServerSide>
+    <PortNum>1433</PortNum>
+    <IsCustomConnectionStringServerSide>true</IsCustomConnectionStringServerSide>
+    <MinConnectionsNumber>0</MinConnectionsNumber>
+    <MaxConnectionsNumber>60</MaxConnectionsNumber>
+    <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>
+    <AutomaticMetadataLoading>false</AutomaticMetadataLoading>
+    <OfflineMode>true</OfflineMode>
+    <DataSource>192.168.1.10</DataSource>
+    <DataBase>Temenos_PROD</DataBase>
+    <UserId>sa</UserId>
+    <Password>~encs2~PY5wTQYLpodcO6roXSsGbbxzPhPqCTkbbrd/DxODog3eSOon/X7lX/XB</Password>
+    <Certificate></Certificate>
+    <SchemaFilter></SchemaFilter>
+    <CommandList></CommandList>
+</DBConn>

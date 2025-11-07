@@ -1,0 +1,12 @@
+description: Mask Social Security Number
+tags: masking,Masking
+stages:
+  Get Seed: {
+    }
+  SSN:
+    actors:
+      RandomSSN:
+        parent: RandomSSN
+        out:
+          value:
+            external: value

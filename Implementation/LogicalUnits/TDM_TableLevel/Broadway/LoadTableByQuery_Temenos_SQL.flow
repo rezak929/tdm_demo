@@ -1,0 +1,253 @@
+tags: LoadFlows
+stages:
+  Inputs:
+    transactional: false
+    actors:
+      JavaScript1:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                const arr = inputRecords
+
+                var topKeys = [];
+
+                if (arr && arr.size && arr.size() > 0) {
+                    var first = arr.get(0);              // get the first record
+                    if (first && first.keySet) {
+                        topKeys = Java.from(first.keySet());  // convert Java Set → JS Array
+                    }
+                }
+
+                topKeys;
+              script: |-
+                var arr = inputRecords;
+                var topKeys = [];
+
+                if (arr && arr.size && arr.size() > 0) {
+                  var first = arr.get(0); // get the first record
+
+                  if (first && first.keySet) {
+                    topKeys = Java.from(first.keySet()); // convert Java Set → JS Array
+                  }
+                }
+
+                topKeys;
+          inputRecords:
+            external: inputRecords
+            schema: '#ref'
+            mandatory: false
+      Target Interface:
+        parent: Const
+        remark: The target interface
+        in:
+          value:
+            const: null
+            external: targetInterface
+            schema: string
+        out:
+          value:
+            schema: string
+      Target Schema:
+        parent: Const
+        remark: The target Schema
+        in:
+          value:
+            const: null
+            external: targetSchema
+            schema: string
+        out:
+          value:
+            schema: string
+      Target Table Name:
+        parent: Const
+        remark: The name of the target table.
+        in:
+          value:
+            const: null
+            external: targetTable
+            schema: string
+        out:
+          value:
+            schema: string
+      'Table''s fields Names ':
+        parent: Const
+        in:
+          value:
+            const: null
+            external: fieldsArray
+            schema: '#ref'
+        out:
+          value:
+            schema: '#ref'
+      Input Records:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: inputRecords
+            schema: '#ref'
+        out:
+          value:
+            schema: '#ref'
+      Get Commit Size:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_REF_UPD_SIZE
+            default: false
+        out:
+          result:
+            schema: integer
+  Stage 1:
+    transactional: false
+  Load Data To Target:
+    transactional: true
+    actors:
+      Load Table:
+        parent: DbLoad
+        in:
+          interface:
+            const: null
+            external: targetInterface
+          schema:
+            const: null
+            external: targetSchema
+          table:
+            const: null
+            external: targetTable
+          fields:
+            const: null
+            link: JavaScript1/result
+          keys:
+            const: null
+          batch:
+            const: true
+          __active_environment:
+            const: target
+            schema: string
+            mandatory: false
+          card_id:
+            schema: any
+            mandatory: false
+            createdBy: fields
+          account_no:
+            schema: any
+            mandatory: false
+            createdBy: fields
+          card_type:
+            schema: any
+            mandatory: false
+            createdBy: fields
+          card_num:
+            schema: any
+            mandatory: false
+            createdBy: fields
+          expiry_mm_yy:
+            schema: any
+            mandatory: false
+            createdBy: fields
+          status:
+            schema: any
+            mandatory: false
+            createdBy: fields
+          payload:
+            schema: any
+            mandatory: false
+            createdBy: fields
+          params:
+            link:
+              path: Input Records/value
+              iterate: Iterate
+      Count Records:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var i = flowGlobals.recCount;
+              var result = false;
+              if (i == null) {
+                  i = 0;
+              }
+              flowGlobals.recCount = ++i;
+              if (i%commitSize === 0) {
+                  result = true;
+              }
+              result;
+          commitSize:
+            link: Get Commit Size/result
+            schema: boolean
+            mandatory: false
+        out:
+          result:
+            schema: integer
+  Stage To Commit every Commit Size:
+    last: 1
+    transactional: false
+    actors:
+      Commit?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Count Records/result
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+  Return Current Count:
+    transactional: false
+    actors:
+      Count:
+        parent: JavaScript
+        in:
+          script:
+            const: flowGlobals.recCount;
+        out:
+          result:
+            external: result
+            schema: integer
+schemas:
+  JavaScript1.in.inputRecords:
+    type: array
+    items:
+      type: object
+      properties:
+        card_id:
+          type: integer
+        account_no:
+          type: string
+        card_type:
+          type: string
+        card_num:
+          type: string
+        expiry_mm_yy:
+          type: string
+        status:
+          type: string
+        payload:
+          type: string
+  Table's fields Names .in.value:
+    type: array
+    items:
+      type: string
+  Table's fields Names .out.value:
+    type: array
+    items:
+      type: string
+  Input Records.in.value:
+    type: array
+    items: {
+      }
+  Input Records.out.value:
+    type: array
+    items:
+      type: object
+      properties:
+        contract_ref_id:
+          type: integer
+        offer_ref_id:
+          type: integer
+        offer_contract_description:
+          type: string

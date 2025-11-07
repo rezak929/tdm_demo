@@ -1,0 +1,84 @@
+tags: Masking
+stages:
+  Get Seed:
+    actors:
+      GetSeed:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetSeed
+        out:
+          Seed:
+            schema: '#ref'
+  Break:
+    actors:
+      Trim & Break:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var trimPhone = value.replace(/[^0-9]/g, '');
+              ({
+                  "start":trimPhone.substring(0,trimPhone.length - 7),
+                  "end":trimPhone.substring(trimPhone.length - 7),
+                  "full":trimPhone
+              })
+          value:
+            external: value
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      RandomNumber:
+        parent: RandomNumber
+        in:
+          minimum:
+            const: 1000000
+          maximum:
+            const: 9999999
+          seed:
+            const: null
+            link: GetSeed/Seed
+  Phone:
+    actors:
+      Concat Phone:
+        parent: Concat
+        in:
+          delimiter:
+            const: ''
+          elements:
+            link:
+            - path: Trim & Break/result/start
+              pos: 0
+            - path: RandomNumber/value
+              pos: 1
+  Format:
+    actors:
+      Match Format:
+        parent: MatchFormat
+        in:
+          loopLimit:
+            default: false
+          new:
+            link: Concat Phone/string
+          original:
+            external: value
+        out:
+          result:
+            external: value
+schemas:
+  GetSeed.out.Seed:
+    type: object
+    properties:
+      Execution_Id:
+        type: string
+  Trim & Break.out.result:
+    type: object
+    properties:
+      start:
+        type: string
+      end:
+        type: string
+      full:
+        type: string

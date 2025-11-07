@@ -1,0 +1,143 @@
+tags: Masking
+stages:
+  Break Email:
+    actors:
+      Break Email Address:
+        parent: JavaScript
+        height: 139
+        in:
+          script:
+            const:
+              userCode: |-
+                // Find . before @ sign
+                var dotPointer = emailAddress.substring(0,emailAddress.indexOf('@')).indexOf('.');
+                // If . exists, get first name, else null
+                var firstName = (dotPointer != -1) ? emailAddress.substring(0,emailAddress.indexOf('.')) : null;
+                var lastName  = (dotPointer != -1) ? emailAddress.substring(emailAddress.indexOf('.')+1,emailAddress.indexOf('@')) : emailAddress.substring(0,emailAddress.indexOf('@'));
+
+                ({
+                    "FirstName":firstName,
+                    "LastName":lastName,
+                    "CompanyName":emailAddress.substring(emailAddress.indexOf('@')+1,emailAddress.lastIndexOf('.'))
+                })
+              script: |-
+                // Find . before @ sign
+                var dotPointer = emailAddress.substring(0, emailAddress.indexOf('@')).indexOf('.'); // If . exists, get first name, else null
+
+                var firstName = dotPointer != -1 ? emailAddress.substring(0, emailAddress.indexOf('.')) : null;
+                var lastName = dotPointer != -1 ? emailAddress.substring(emailAddress.indexOf('.') + 1, emailAddress.indexOf('@')) : emailAddress.substring(0, emailAddress.indexOf('@'));
+                ({
+                  "FirstName": firstName,
+                  "LastName": lastName,
+                  "CompanyName": emailAddress.substring(emailAddress.indexOf('@') + 1, emailAddress.lastIndexOf('.'))
+                });
+          emailAddress:
+            external: value
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Mask FirstName:
+    dependsOn: Break Email
+    actors:
+      NotNull1:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: Break Email Address/result/FirstName
+      FirstName:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: Mask_Name
+          value:
+            link: Break Email Address/result/FirstName
+            schema: string
+            mandatory: false
+          Type:
+            const: First
+            schema: string
+            mandatory: false
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Mask LastName:
+    dependsOn: Break Email
+    actors:
+      LastName:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: Mask_Name
+          value:
+            link: Break Email Address/result/LastName
+            schema: string
+            mandatory: false
+          Type:
+            const: Last
+            schema: string
+            mandatory: false
+        out:
+          value:
+            schema: string
+  Email:
+    actors:
+      Mask Email:
+        parent: JavaScript
+        height: 174
+        in:
+          script:
+            const:
+              userCode: |-
+                if(!email || !lastName){
+                    email;
+                } else {
+                    if(!companyName){
+                        (!firstName || firstName.trim() == '') ? lastName + email.substring(email.indexOf("@"))               : firstName + "." + lastName + email.substring(email.indexOf("@"));
+                    } else {
+                        (!firstName || firstName.trim() == '') ? lastName + "@" + companyName.replace(/[^\w.-]/g,"") + ".com" : firstName + "." + lastName + "@" + companyName.replace(/[^\w.-]/g,"") + ".com";
+                    }
+                }
+              script: |-
+                if (!email || !lastName) {
+                  email;
+                } else {
+                  if (!companyName) {
+                    !firstName || firstName.trim() == '' ? lastName + email.substring(email.indexOf("@")) : firstName + "." + lastName + email.substring(email.indexOf("@"));
+                  } else {
+                    !firstName || firstName.trim() == '' ? lastName + "@" + companyName.replace(/[^\w.-]/g, "") + ".com" : firstName + "." + lastName + "@" + companyName.replace(/[^\w.-]/g, "") + ".com";
+                  }
+                }
+          email:
+            external: value
+            schema: string
+            mandatory: false
+          firstName:
+            link: FirstName/value
+            schema: string
+            mandatory: false
+          lastName:
+            link: LastName/value
+            schema: string
+            mandatory: false
+          companyName:
+            link: Break Email Address/result/CompanyName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            external: value
+            schema: string
+schemas:
+  Break Email Address.out.result:
+    type: object
+    properties:
+      FirstName: {
+        }
+      LastName:
+        type: string
+      CompanyName:
+        type: string

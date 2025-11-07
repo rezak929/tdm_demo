@@ -1,0 +1,41 @@
+{
+  "Rules" : [ {
+    "name" : "Baseline",
+    "connectToSource" : true,
+    "sampleSize" : {
+      "percentage" : 10,
+      "min" : 100,
+      "max" : 500,
+      "rowCount" : true
+    },
+    "globalSchemaExclude" : [ "SYS.*", ".*SYS$", "USER.*", ".*USER$" ]
+  }, {
+    "name" : "Temenos_Oracle",
+    "enabled" : true,
+    "dataPlatform" : "Temenos_Oracle",
+    "schema" : [ "TEMENOS_DEMO" ],
+    "dataset" : [ "ACCOUNT_XML", "BRANCH_XML", "CARD_XML", "CURRENCY_XML", "CUSTOMER_XML", "LOAN_XML", "PARTY_XML", "PRODUCT_XML", "TXN_ENTRY_XML", "TXN_XML" ],
+    "override" : true,
+    "pluginsOverride" : {
+      "Option Set Analyzer" : { },
+      "Reference by Name Comparison" : {
+        "active" : true
+      }
+    },
+    "filter" : "ExcludeOthers"
+  }, {
+    "name" : "Temenos_API",
+    "enabled" : true,
+    "dataPlatform" : "Temenos_API",
+    "schema" : [ "holdings" ],
+    "dataset" : [ "accounts" ],
+    "filter" : "ExcludeOthers"
+  }, {
+    "name" : "Temenos_SQL",
+    "enabled" : true,
+    "dataPlatform" : "Temenos_SQL",
+    "schema" : [ "dbo" ],
+    "dataset" : [ "ACCOUNT_XML", "BRANCH_XML", "CARD_XML", "CURRENCY_XML", "CUSTOMER_XML", "LOAN_XML", "PARTY_XML", "PRODUCT_XML", "TXN_ENTRY_XML", "TXN_XML" ],
+    "filter" : "ExcludeOthers"
+  } ]
+}
